@@ -7,6 +7,7 @@ import PrimaryButton from './components/primary-button';
 import { useState } from 'react';
 import CircleButton from './components/circle-button';
 import IconButton from './components/icon-button';
+import EmojiPicker from './components/emoji-picker';
 
 const placeholderImage: ImageURISource = require('../assets/images/background-image.png')
 
@@ -15,8 +16,12 @@ const App = () => {
   const [selectedImage, setSelectedImage] = useState<string>('')
   // showOptionがtrueのときモーダルを表示したい
   // showOptionの真偽値は画像が選択されたら、trueに変更する
-
   const [showOption, setShowOption] = useState(false)
+
+  // isModalVisibleがtrueのときemojiPickerを表示したい
+  // 写真選択後にプラスボタンをタップするとtrueに変更する
+  // EmojiPickerの✗をタップするとfalseに変更する
+  const [isModalVisible, setIsModalVisible] = useState(false)
 
 
   // 関数
@@ -42,7 +47,10 @@ const App = () => {
     setShowOption(!showOption)
   }
 
-  const onAddSticker = () => {}
+  // プラスボタンをタップするとisModalVisibleの真偽値がtrueになり，emojiPickerが表示される
+  const handleSticker = () => {
+    setIsModalVisible(!isModalVisible)
+  }
 
   const onSaveImageAsync = () => {}
 
@@ -62,31 +70,30 @@ const App = () => {
       {/* showOptionがtrueになったときだけ写真選択ボタンの代わりにモーダルを表示させたい */}
       {showOption ?
       // trueのとき
-      (
-        <View style={styles.optionContainer}>
-          <View style={styles.optionRow}>
-            {/* MaterialIconsのnameを変数にしたい */}
-            {/* アイコン横の文字を変数にしたい */}
-            <IconButton icon='refresh' label='Reset' onPress={handlePress}/>
-            <CircleButton onPress={onAddSticker}/>
-            <IconButton icon='save-alt' label='Save' onPress={onSaveImageAsync}/>
+        (
+          <View style={styles.optionContainer}>
+            <View style={styles.optionRow}>
+              {/* MaterialIconsのnameを変数にしたい */}
+              {/* アイコン横の文字を変数にしたい */}
+              <IconButton icon='refresh' label='Reset' onPress={handlePress}/>
+              <CircleButton onPress={handleSticker}/>
+              <IconButton icon='save-alt' label='Save' onPress={onSaveImageAsync}/>
+            </View>
           </View>
+        )
+        :
+        // falseのとき
+        (<View style={styles.footerContainer}>
+          {/* ボーダーとアイコン付きのボタン */}
+          <PrimaryButton label='Choose a photo' onPress={pickImageAsync}/>
+          {/* 普通のボタン */}
+          <Button label='Use this photo' onPress={handlePress}/>
         </View>
-      )
-      :
-      // falseのとき
-      (<View style={styles.footerContainer}>
-        {/* ボーダーとアイコン付きのボタン */}
-        <PrimaryButton
-          label='Choose a photo'
-          onPress={pickImageAsync}
-        />
-        {/* 普通のボタン */}
-        <Button
-        label='Use this photo'
-        onPress={handlePress}
-        />
-      </View>)}
+        )
+      }
+      {/* 絵文字ピッカー */}
+      <EmojiPicker isVisible={isModalVisible} onClose={handleSticker}/>
+        
 
     {/* statusBarって何？ */}
     {/* JSX内でコメントアウトするとき */}
